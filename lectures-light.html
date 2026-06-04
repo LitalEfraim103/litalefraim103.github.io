@@ -302,6 +302,17 @@
     .form-status { margin-top:0.6rem; padding:0.65rem 0.9rem; border-radius:10px; font-size:0.83rem; text-align:center; display:none; }
     .form-status.success { background:rgba(22,163,74,0.09); color:#16a34a; border:1px solid rgba(22,163,74,0.2); display:block; }
     .form-status.error { background:rgba(220,38,38,0.09); color:#dc2626; border:1px solid rgba(220,38,38,0.2); display:block; }
+    .chooser-card { max-width:300px; }
+    .chooser-btns { display:flex; flex-direction:column; gap:0.7rem; margin-top:1.2rem; }
+    .chooser-btn { display:flex; align-items:center; gap:0.8rem; padding:0.8rem 1.1rem; border-radius:12px; font-size:0.92rem; font-weight:600; font-family:inherit; border:none; cursor:pointer; text-decoration:none; color:white; transition:transform 0.2s,box-shadow 0.2s; }
+    .chooser-btn:hover { transform:translateY(-2px); }
+    .chooser-btn-icon { font-size:1rem; width:22px; text-align:center; flex-shrink:0; }
+    .chooser-wa { background:linear-gradient(135deg,#25D366,#128C7E); box-shadow:0 4px 18px rgba(37,211,102,0.22); }
+    .chooser-wa:hover { box-shadow:0 10px 28px rgba(37,211,102,0.35); }
+    .chooser-form { background:linear-gradient(135deg,var(--turquoise),var(--teal-dark)); box-shadow:0 4px 18px rgba(20,184,166,0.22); }
+    .chooser-form:hover { box-shadow:0 10px 28px rgba(20,184,166,0.35); }
+    .chooser-li { background:#0A66C2; box-shadow:0 4px 18px rgba(10,102,194,0.22); }
+    .chooser-li:hover { background:#004182; box-shadow:0 10px 28px rgba(10,102,194,0.35); }
     @media (max-width:520px) { .form-row{grid-template-columns:1fr} .modal-card{padding:1.75rem} }
   </style>
 </head>
@@ -314,7 +325,7 @@
     <a href="about-light.html"      data-i="nav-about">מי אני</a>
     <a href="lectures-light.html"   data-i="nav-lectures" class="nav-active">חוסן והשראה</a>
     <a href="technology-light.html" data-i="nav-tech">ייעוץ וטכנולוגיה</a>
-    <a href="#contact"              data-i="nav-contact" onclick="toggleMenu()">צור קשר</a>
+    <a href="javascript:void(0)"                    data-i="nav-contact" onclick="toggleMenu(); openModal()">צור קשר</a>
   </div>
 
   <nav>
@@ -326,7 +337,7 @@
       <li><a href="about-light.html"      data-i="nav-about">מי אני</a></li>
       <li><a href="lectures-light.html"   data-i="nav-lectures" class="nav-active">חוסן והשראה</a></li>
       <li><a href="technology-light.html" data-i="nav-tech">ייעוץ וטכנולוגיה</a></li>
-      <li><a href="#contact"              data-i="nav-contact">צור קשר</a></li>
+      <li><a href="javascript:void(0)"                    data-i="nav-contact" onclick="openContactChooser()">צור קשר</a></li>
     </ul>
     <div style="display:flex;align-items:center;gap:0.75rem">
       <button class="theme-toggle" onclick="localStorage.setItem('theme','dark');location.reload()"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> <span data-i="themeToggle">מצב כהה</span></button>
@@ -472,6 +483,7 @@
       contactCta:'הזמינו הרצאה',
       waBtn:'WhatsApp',
       waUrl:'https://wa.me/972559894650?text=היי%20ליטל%2C%20אני%20מתעניין%2Fת%20בהרצאה',
+      chooserTitle:'דברו איתי', chooserSub:'בחרו את הדרך המועדפת עליכם', chooserBtnWa:'WhatsApp', chooserBtnForm:'טופ�� פנייה', chooserBtnLi:'LinkedIn',
       emailSubject:'הזמנת הרצאה: ',
       emailBody:'שלום ליטל,\n\nאני מעוניין/ת בהרצאה "{{title}}".\n\nאשמח לשמוע פרטים.',
       waText:'היי ליטל, אני מתעניין/ת בהרצאה "{{title}}" 🙏',
@@ -525,6 +537,7 @@
       contactCta:'Book a Lecture',
       waBtn:'WhatsApp',
       waUrl:"https://wa.me/972559894650?text=Hi%20Lital%2C%20I'm%20interested%20in%20your%20lectures",
+      chooserTitle:"Let's Connect", chooserSub:'Choose your preferred channel', chooserBtnWa:'WhatsApp', chooserBtnForm:'Contact Form', chooserBtnLi:'LinkedIn',
       emailSubject:'Book a Lecture: ',
       emailBody:'Hi Lital,\n\nI\'m interested in the lecture "{{title}}".\n\nI\'d love to hear more details.',
       waText:'Hi Lital, I\'m interested in the lecture "{{title}}" 🙏',
@@ -680,6 +693,13 @@
   }
   function closeModal(e) { if (e.target === document.getElementById('contactModal')) closeModalBtn(); }
   function closeModalBtn() { document.getElementById('contactModal').classList.remove('open'); document.body.style.overflow = ''; }
+  function openContactChooser() {
+    document.getElementById('chooserWa').href = T[localStorage.getItem('lang') || 'he'].waUrl;
+    document.getElementById('contactChooser').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeChooser(e) { if (e.target === document.getElementById('contactChooser')) closeChooserBtn(); }
+  function closeChooserBtn() { document.getElementById('contactChooser').classList.remove('open'); document.body.style.overflow = ''; }
   async function submitForm(e) {
     e.preventDefault();
     const lang = localStorage.getItem('lang') || 'he';
@@ -722,6 +742,28 @@
   </script>
 
   <!-- ── CONTACT MODAL ── -->
+  <div class="modal-overlay" id="contactChooser" onclick="closeChooser(event)">
+    <div class="modal-card chooser-card">
+      <button class="modal-close" onclick="closeChooserBtn()">✕</button>
+      <h3 class="modal-title" data-i="chooserTitle">דברו איתי</h3>
+      <p class="modal-subtitle" data-i="chooserSub">בחרו את הדרך המועדפת עליכם</p>
+      <div class="chooser-btns">
+        <a id="chooserWa" href="#" target="_blank" rel="noopener" class="chooser-btn chooser-wa">
+          <span class="chooser-btn-icon">💬</span>
+          <span data-i="chooserBtnWa">WhatsApp</span>
+        </a>
+        <button class="chooser-btn chooser-form" onclick="closeChooserBtn(); openModal()">
+          <span class="chooser-btn-icon">✉</span>
+          <span data-i="chooserBtnForm">טופס פנייה</span>
+        </button>
+        <a href="https://www.linkedin.com/in/lital-efraim" target="_blank" rel="noopener" class="chooser-btn chooser-li">
+          <span class="chooser-btn-icon">in</span>
+          <span data-i="chooserBtnLi">LinkedIn</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="contactModal" onclick="closeModal(event)">
     <div class="modal-card">
       <button class="modal-close" onclick="closeModalBtn()">✕</button>
@@ -743,6 +785,12 @@
       </form>
     </div>
   </div>
+
+
+<!-- Floating WhatsApp -->
+<a href="https://wa.me/972559894650?text=%D7%94%D7%99%D7%99%20%D7%9C%D7%99%D7%98%D7%9C%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A9%D7%9E%D7%95%D7%A2%20%D7%A2%D7%95%D7%93%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D" target="_blank" rel="noopener noreferrer" aria-label="פנייה ב-WhatsApp" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;width:56px;height:56px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,0.4);transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='scale(1.12)';this.style.boxShadow='0 6px 24px rgba(37,211,102,0.6)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(37,211,102,0.4)'">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
 </body>
 </html>
-
