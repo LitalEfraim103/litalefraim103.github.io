@@ -32,6 +32,9 @@ slides_data.json
 *.mov
 *.avi
 
+# Web-optimized research demo videos are part of the site
+!research/*.mp4
+
 # Windows temp files
 ~$*
 Thumbs.db
