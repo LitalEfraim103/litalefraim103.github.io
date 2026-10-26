@@ -243,6 +243,7 @@
     .soon-title { font-size: 1.05rem; font-weight: 700; color: var(--teal-dark); }
     .soon-sub { font-size: 0.85rem; color: var(--gray); }
 
+    .video-list { display: flex; flex-direction: column; gap: 1.75rem; }
     .video-frame { aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; border: 1px solid rgba(13,148,136,0.2); box-shadow: 0 16px 45px rgba(15,23,42,0.18); }
     .video-frame video { width: 100%; height: 100%; display: block; background: #000; }
     .video-caption { margin-top: 1rem; font-size: 0.86rem; color: var(--gray); line-height: 1.85; max-width: 780px; }
@@ -442,11 +443,31 @@
         </div>
 
         <div class="research-panel" role="tabpanel" id="panel-demo" aria-labelledby="tab-demo">
+          <div class="video-list">
           <div class="video-frame" dir="ltr">
-            <video id="demoVideo" data-lang="he" controls preload="metadata" playsinline poster="research/io-transition-poster-he.jpg">
+            <video class="demo-video" controls preload="metadata" playsinline poster="research/io-transition-poster-he.jpg"
+                   data-src-he="research/io-transition-demo-he.mp4" data-src-en="research/io-transition-demo-en.mp4"
+                   data-poster-he="research/io-transition-poster-he.jpg" data-poster-en="research/io-transition-poster-en.jpg">
               <source src="research/io-transition-demo-he.mp4" type="video/mp4" />
               <span data-i="videoFallback">הדפדפן שלך אינו תומך בהצגת וידאו.</span>
             </video>
+          </div>
+          <div class="video-frame" dir="ltr">
+            <video class="demo-video" controls preload="metadata" playsinline poster="research/io-transition-033-poster-en.jpg"
+                   data-src-he="research/io-transition-033-en.mp4" data-src-en="research/io-transition-033-en.mp4"
+                   data-poster-he="research/io-transition-033-poster-en.jpg" data-poster-en="research/io-transition-033-poster-en.jpg">
+              <source src="research/io-transition-033-en.mp4" type="video/mp4" />
+              <span data-i="videoFallback">הדפדפן שלך אינו תומך בהצגת וידאו.</span>
+            </video>
+          </div>
+          <div class="video-frame" dir="ltr">
+            <video class="demo-video" controls preload="metadata" playsinline poster="research/io-transition-089-poster-en.jpg"
+                   data-src-he="research/io-transition-089-en.mp4" data-src-en="research/io-transition-089-en.mp4"
+                   data-poster-he="research/io-transition-089-poster-en.jpg" data-poster-en="research/io-transition-089-poster-en.jpg">
+              <source src="research/io-transition-089-en.mp4" type="video/mp4" />
+              <span data-i="videoFallback">הדפדפן שלך אינו תומך בהצגת וידאו.</span>
+            </video>
+          </div>
           </div>
           <p class="video-caption" data-i="demoCaption">הסרטון מריץ את הפייפליין על צילום פנורמי רציף: שלושה ערוצים (זיהוי אובייקטים, שטח מבנים וסגמנטציה סמנטית) מכריעים כל אחד בנפרד, וההחלטה הסופית מתקבלת מהשילוב ביניהם. טורקיז מסמן פנים, בז׳ מסמן חוץ.</p>
         </div>
@@ -555,7 +576,6 @@
       articleSoonTitle:"המאמר יעלה בקרוב",
       soonSub:"התוכן נמצא בהכנה ויתווסף לעמוד זה.",
       demoCaption:"הסרטון מריץ את הפייפליין על צילום פנורמי רציף: שלושה ערוצים (זיהוי אובייקטים, שטח מבנים וסגמנטציה סמנטית) מכריעים כל אחד בנפרד, וההחלטה הסופית מתקבלת מהשילוב ביניהם. טורקיז מסמן פנים, בז׳ מסמן חוץ.",
-      demoVideo:"research/io-transition-demo-he.mp4", demoPoster:"research/io-transition-poster-he.jpg",
       keywords:["פנורמה 360°", "סגמנטציה סמנטית", "זיהוי אובייקטים", "מעברי פנים-חוץ", "ראייה ממוחשבת", "למידה עמוקה"],
       videoFallback:"הדפדפן שלך אינו תומך בהצגת וידאו."
     },
@@ -600,7 +620,6 @@
       articleSoonTitle:"Paper coming soon",
       soonSub:"This content is in preparation and will be added here.",
       demoCaption:"The video runs the pipeline on continuous panoramic footage: three channels (object detection, building area and semantic segmentation) each make their own call, and the final decision is fused from all three. Turquoise marks indoor, beige marks outdoor.",
-      demoVideo:"research/io-transition-demo-en.mp4", demoPoster:"research/io-transition-poster-en.jpg",
       keywords:["360° Panorama", "Semantic Segmentation", "Object Detection", "Indoor-Outdoor Transitions", "Computer Vision", "Deep Learning"],
       videoFallback:"Your browser does not support video playback."
     }
@@ -632,21 +651,31 @@
     e.preventDefault();
   });
 
-  // ── DEMO VIDEO + KEYWORDS (per language) ──
+  // ── DEMO VIDEOS + KEYWORDS (per language) ──
   function applyResearchLang(lang) {
     const d = T[lang];
     const kw = document.getElementById('rKeywords');
     if (!kw) throw new Error('Missing #rKeywords');
     kw.innerHTML = d.keywords.map(k => '<li>' + k + '</li>').join('');
-    const video = document.getElementById('demoVideo');
-    if (!video) throw new Error('Missing #demoVideo');
-    if (video.dataset.lang === lang) return;
-    video.pause();
-    video.poster = d.demoPoster;
-    video.querySelector('source').src = d.demoVideo;
-    video.load();
-    video.dataset.lang = lang;
+    const videos = document.querySelectorAll('.demo-video');
+    if (!videos.length) throw new Error('Missing .demo-video players');
+    videos.forEach(video => {
+      if (video.dataset.lang === lang) return;
+      const src = video.dataset['src' + (lang === 'he' ? 'He' : 'En')];
+      const poster = video.dataset['poster' + (lang === 'he' ? 'He' : 'En')];
+      if (!src || !poster) throw new Error('Demo video is missing its ' + lang + ' source');
+      video.pause();
+      video.poster = poster;
+      video.querySelector('source').src = src;
+      video.load();
+      video.dataset.lang = lang;
+    });
   }
+  // Only one demo plays at a time
+  document.addEventListener('play', e => {
+    if (!e.target.classList || !e.target.classList.contains('demo-video')) return;
+    document.querySelectorAll('.demo-video').forEach(v => { if (v !== e.target) v.pause(); });
+  }, true);
 
   function setLang(lang) {
     localStorage.setItem('lang', lang);
