@@ -523,17 +523,17 @@
             </video>
           </div>
           <div class="video-frame" dir="ltr">
-            <video class="demo-video" controls preload="metadata" playsinline poster="research/io-transition-033-poster-en.jpg"
-                   data-src-he="research/io-transition-033-en.mp4" data-src-en="research/io-transition-033-en.mp4"
-                   data-poster-he="research/io-transition-033-poster-en.jpg" data-poster-en="research/io-transition-033-poster-en.jpg">
-              <source src="research/io-transition-033-en.mp4" type="video/mp4" />
+            <video class="demo-video" controls preload="metadata" playsinline poster="research/io-transition-033-poster-he.jpg"
+                   data-src-he="research/io-transition-033-he.mp4" data-src-en="research/io-transition-033-en.mp4"
+                   data-poster-he="research/io-transition-033-poster-he.jpg" data-poster-en="research/io-transition-033-poster-en.jpg">
+              <source src="research/io-transition-033-he.mp4" type="video/mp4" />
               <span data-i="videoFallback">הדפדפן שלך אינו תומך בהצגת וידאו.</span>
             </video>
           </div>
           <div class="video-frame" dir="ltr">
             <video class="demo-video" controls preload="metadata" playsinline poster="research/io-transition-089-poster-en.jpg"
-                   data-src-he="research/io-transition-089-en.mp4" data-src-en="research/io-transition-089-en.mp4"
-                   data-poster-he="research/io-transition-089-poster-en.jpg" data-poster-en="research/io-transition-089-poster-en.jpg">
+                   data-src-he="" data-src-en="research/io-transition-089-en.mp4"
+                   data-poster-he="" data-poster-en="research/io-transition-089-poster-en.jpg">
               <source src="research/io-transition-089-en.mp4" type="video/mp4" />
               <span data-i="videoFallback">הדפדפן שלך אינו תומך בהצגת וידאו.</span>
             </video>
@@ -736,8 +736,13 @@
       if (video.dataset.lang === lang) return;
       const src = video.dataset['src' + (lang === 'he' ? 'He' : 'En')];
       const poster = video.dataset['poster' + (lang === 'he' ? 'He' : 'En')];
-      if (!src || !poster) throw new Error('Demo video is missing its ' + lang + ' source');
+      const frame = video.closest('.video-frame');
       video.pause();
+      // A demo without a version in this language is hidden rather than shown in the other language
+      frame.hidden = !src;
+      video.dataset.lang = lang;
+      if (!src) return;
+      if (!poster) throw new Error('Demo video is missing its ' + lang + ' poster');
       video.poster = poster;
       video.querySelector('source').src = src;
       video.load();
